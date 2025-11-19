@@ -1,8 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"log"
+)
 
 func main() {
-    fmt.Println("Hello, World!")
-}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprint(w, "Hello, World!")
+    })
 
+    http.HandleFunc("/discord", func(w http.ResponseWriter, r *http.Request) {
+        go HandleDiscord(w, r)
+    })
+
+    http.HandleFunc("/slack", func(w http.ResponseWriter, r *http.Request) {
+        go HandleSlack(w, r)
+    })
+
+    http.HandleFunc("/gmail", func(w http.ResponseWriter, r *http.Request) {
+        go HandleGmail(w, r)
+    })
+
+    log.Println("API running on :8080")
+    log.Fatal(http.ListenAndServe(":8080", nil))
+}
