@@ -1,0 +1,36 @@
+import discord
+import requests
+import json
+
+with open("secrets.json") as f:
+    secrets = json.load(f)
+
+TOKEN = secrets["discord_token"]
+API_URL = secrets["api_url"]
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+    print(f"Bot online as {client.user}")
+
+@client.event
+async def on_message(message):
+    # ignore self
+    if message.author == client.user:
+        return
+
+    if isinstance(message.channel, discord.DMChannel):
+        # send a post
+        try:
+            requests.post(API_URL)
+        except Exception as e:
+            print("Failed to POST:", e)
+
+        await message.channel.send("ping sent.")
+
+client.run(TOKEN)
+
